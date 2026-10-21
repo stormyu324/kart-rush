@@ -1,0 +1,33 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "kart-rush",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-26",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "./public"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "ROOMS",
+        "class_name": "RaceRoom"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "RaceRoom"
+      ]
+    }
+  ],
+  "routes": [
+    { "pattern": "games.stormnovalabs.com/kart", "zone_name": "stormnovalabs.com" },
+    { "pattern": "games.stormnovalabs.com/kart/*", "zone_name": "stormnovalabs.com" }
+  ],
+  "workers_dev": true
+}
