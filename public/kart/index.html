@@ -2514,7 +2514,7 @@ function updateHUD(){
   else { slot.classList.remove('roll'); setHTML('itemIcon', p.item ? ITEM_ICON[p.item] : ''); $('itemIcon').classList.toggle('red', p.item === 'redshell'); setHTML('itemCnt', p.item && p.itemCount > 1 ? '×' + p.itemCount : ''); }
   $('wrong').classList.toggle('hidden', !(p.wrongT > 1 && state === 'race'));
   const order = updateRanks();
-  setHTML('board', order.map(k => `<div class="r${k.isPlayer ? ' me' : ''}"><b>${k.rank}</b><i style="background:${hexStr(k.color)}"></i>${k.name}${k.finished ? ' 🏁' : ''}</div>`).join(''));
+  setHTML('board', order.map(k => `<div class="r${k.isPlayer ? ' me' : ''}"><b>${k.rank}</b><i style="background:${hexStr(k.color)}"></i>${esc(k.name)}${k.finished ? ' 🏁' : ''}</div>`).join(''));
   if (touch.on && gyro.on) $('tilt').firstChild.style.transform = `translateX(${(gyroActive() ? gyro.val : 0) * 78}px)`;
   drawMinimap();
 }
@@ -2559,7 +2559,9 @@ function setButtons(list){
   const box = $('resBtns'); box.innerHTML = '';
   for (const [label, fn, cls] of list) { const b = document.createElement('button'); b.className = 'btn' + (cls ? ' ' + cls : ''); b.textContent = label; b.onclick = fn; box.appendChild(b); }
 }
-const dotName = (d, me, name) => `<span class="dot" style="background:${hexStr(d.c)}"></span>${name || d.n}${me ? '（你）' : ''}`;
+// 玩家昵称来自网络，拼进 innerHTML 前必须转义
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
+const dotName = (d, me, name) => `<span class="dot" style="background:${hexStr(d.c)}"></span>${esc(name || d.n)}${me ? '（你）' : ''}`;
 function loadGhost(trackId){ try { return JSON.parse(store.get('kr-ghost-' + trackId + '-' + cc) || 'null'); } catch (e) { return null; } }
 function showResults(){
   if (resultsShown) return; resultsShown = true;
@@ -3489,7 +3491,7 @@ function showLobby(){
 function renderLobby(){
   if ($('lobby').classList.contains('hidden')) return;
   const ps = NET.players, mine = ps.find(p => p.id === NET.id);
-  $('lobbyPlayers').innerHTML = ps.map(p => `<div class="lp${p.id === NET.id ? ' me' : ''}"><i style="background:${hexStr(DRIVERS[p.driver].c)}"></i><div>${p.name}${p.id === NET.id ? '（你）' : ''}<small>${DRIVERS[p.driver].n}${p.id === NET.hostId ? ' · 👑 房主' : ''}</small></div></div>`).join('')
+  $('lobbyPlayers').innerHTML = ps.map(p => `<div class="lp${p.id === NET.id ? ' me' : ''}"><i style="background:${hexStr(DRIVERS[p.driver].c)}"></i><div>${esc(p.name)}${p.id === NET.id ? '（你）' : ''}<small>${DRIVERS[p.driver].n}${p.id === NET.hostId ? ' · 👑 房主' : ''}</small></div></div>`).join('')
     + Array.from({ length:Math.max(0, 6 - ps.length) }, () => `<div class="lp empty">${NET.settings.ai ? '🤖 电脑补位' : '空位'}</div>`).join('');
   const taken = new Set(ps.filter(p => p.id !== NET.id).map(p => p.driver));
   [...$('lobbyDrivers').children].forEach((el, i) => { el.classList.toggle('sel', !!mine && mine.driver === i); el.classList.toggle('taken', taken.has(i)); });

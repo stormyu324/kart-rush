@@ -55,7 +55,7 @@ export class RaceRoom extends DurableObject {
         const taken = new Set(list.map(p => p.driver));
         let driver = Number.isInteger(m.driver) && m.driver >= 0 && m.driver < 6 ? m.driver : 0;
         if (taken.has(driver)) driver = [0, 1, 2, 3, 4, 5].find(d => !taken.has(d));
-        const att = { id: 'p' + (++this.seq), name: String(m.name || '车手').slice(0, 12), driver, joined: Date.now() };
+        const att = { id: 'p' + (++this.seq), name: String(m.name || '').replace(/[<>&"'\u0000-\u001f]/g, '').trim().slice(0, 12) || '车手', driver, joined: Date.now() };
         ws.serializeAttachment(att);
         if (!this.hostId || !list.some(p => p.id === this.hostId)) this.hostId = att.id;
         await this.save();
