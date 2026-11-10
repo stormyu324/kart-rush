@@ -9,13 +9,14 @@ const CCS = [50, 100, 150];
 export class RaceRoom extends DurableObject {
   constructor(ctx, env) {
     super(ctx, env);
-    this.settings = { track: 0, cc: 100, ai: true };
+    this.settings = { track: 0, cc: 100, ai: true, elim: false };
     this.phase = 'lobby';
     this.hostId = null;
     this.seq = 0;
     ctx.blockConcurrencyWhile(async () => {
       const meta = await ctx.storage.get('meta');
       if (meta) Object.assign(this, meta);
+      if (typeof this.settings.elim !== 'boolean') this.settings.elim = false; // 旧房间数据没有这个字段
     });
   }
 
@@ -77,6 +78,7 @@ export class RaceRoom extends DurableObject {
         if (Number.isInteger(s.track) && s.track >= 0 && s.track < TRACK_COUNT) this.settings.track = s.track;
         if (CCS.includes(s.cc)) this.settings.cc = s.cc;
         if (typeof s.ai === 'boolean') this.settings.ai = s.ai;
+        if (typeof s.elim === 'boolean') this.settings.elim = s.elim;
         await this.save();
         this.lobby();
         break;

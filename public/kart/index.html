@@ -77,6 +77,11 @@
   .drv small { display:block; font-size:11px; opacity:.7; font-weight:700; margin-top:1px; }
   .drv .bars { margin:6px 9px 0; display:grid; grid-template-columns:auto 1fr; gap:3px 5px; align-items:center; font-size:10px; opacity:.9; text-align:left; }
   .drv .bars span { height:5px; border-radius:3px; background:rgba(255,255,255,.15); overflow:hidden; }
+  .drv .skill { margin:6px 7px 0; padding:4px 3px; border-radius:8px; background:rgba(255,210,63,.12); font-size:11px; color:#ffe27a; line-height:1.25; }
+  .drv .skill small { font-size:9.5px; color:#fff; opacity:.75; margin-top:2px; }
+  #elimBox { position:absolute; left:50%; top:16px; transform:translateX(-50%); padding:6px 16px; border-radius:14px; font-size:20px; font-weight:900; text-align:center; }
+  #elimBox.danger { background:rgba(220,30,30,.55); animation:elimPulse .5s infinite alternate; }
+  @keyframes elimPulse { to { transform:translateX(-50%) scale(1.08); } }
   .drv .bars span i { display:block; height:100%; margin:0; border:0; border-radius:3px; box-shadow:none; background:linear-gradient(90deg,#ffd23f,#ff8a00); }
   .cups { grid-template-columns:repeat(2,1fr) !important; }
   @media (max-width:520px){ .cups { grid-template-columns:1fr !important; } }
@@ -192,6 +197,7 @@
   <div id="msg" class="stroke num"></div>
   <div id="sub" class="stroke"></div>
   <div id="wrong" class="stroke hidden">⚠ 逆行!</div>
+  <div id="elimBox" class="glass stroke hidden"></div>
   <div id="tilt" class="hidden"><i></i></div>
 </div>
 
@@ -205,7 +211,7 @@
     <h1>卡丁狂飙</h1>
     <div class="tag">KART RUSH · 12 条赛道 · 环游世界名胜</div>
     <div class="label">游戏模式</div>
-    <div class="seg" id="modeSeg"><button data-m="race">单场比赛</button><button data-m="gp">大奖赛</button><button data-m="tt">计时赛</button><button data-m="online">联网对战</button></div>
+    <div class="seg" id="modeSeg"><button data-m="race">单场比赛</button><button data-m="gp">大奖赛</button><button data-m="tt">计时赛</button><button data-m="elim">淘汰赛</button><button data-m="online">联网对战</button></div>
     <div class="modeDesc" id="modeDesc"></div>
     <div class="label" id="trackLabel">选择赛道</div>
     <div class="tracks" id="trackCards"></div>
@@ -234,8 +240,8 @@
     <div><button class="btn" id="startBtn">开始比赛!</button></div>
     <div class="help">
       <kbd>W</kbd><kbd>↑</kbd> 油门 &nbsp; <kbd>S</kbd><kbd>↓</kbd> 刹车/倒车 &nbsp; <kbd>A</kbd><kbd>D</kbd> 转向 &nbsp; <kbd>C</kbd> 后视<br>
-      <kbd>空格</kbd> 或 <kbd>X</kbd> / <kbd>J</kbd> 转弯时按住漂移，蓄到 <span style="color:#6cf">蓝火花</span> / <span style="color:#ff9d2e">橙火花</span> 松开加速 · 飞跃坡道时按 <kbd>空格</kbd> 做特技，落地加速<br>
-      <kbd>E</kbd> / <kbd>Shift</kbd> 使用道具 &nbsp; 跟在别人车尾可吃尾流加速 · 收集 🪙 金币提升极速 &nbsp; <kbd>P</kbd> 暂停 &nbsp; <kbd>M</kbd> 静音 &nbsp; 倒数结束瞬间按住油门可起步加速
+      <kbd>空格</kbd> 或 <kbd>X</kbd> / <kbd>J</kbd> 转弯时按住漂移，蓄到 <span style="color:#6cf">蓝</span> / <span style="color:#ff9d2e">橙</span> / <span style="color:#c45cff">紫</span> / <span style="background:linear-gradient(90deg,#ff5e5e,#ffd23f,#4fe08a,#4fc3ff,#c45cff);-webkit-background-clip:text;color:transparent">彩虹</span>火花松开加速 · 飞跃坡道时按 <kbd>空格</kbd> 做特技，落地加速<br>
+      <kbd>E</kbd> / <kbd>Shift</kbd> 使用道具，按住可把 🍌🐢❄️ 拖在车尾挡攻击 &nbsp; 跟在别人车尾可吃尾流加速 · 收集 🪙 金币提升极速 &nbsp; <kbd>P</kbd> 暂停 &nbsp; <kbd>M</kbd> 静音 &nbsp; 倒数结束瞬间按住油门可起步加速
     </div>
   </div>
 </div>
@@ -270,9 +276,10 @@
     <div class="drivers" id="lobbyDrivers"></div>
     <div class="label">赛道 <span id="hostHint" style="opacity:.6;font-weight:700"></span></div>
     <div class="ltracks" id="lobbyTracks"></div>
-    <div class="label">难度与补位</div>
+    <div class="label">难度 · 补位 · 规则</div>
     <div class="row"><div class="seg" id="lobbyCC"><button data-cc="50">50cc</button><button data-cc="100">100cc</button><button data-cc="150">150cc</button></div>
-      <div class="seg" id="lobbyAI"><button data-ai="1">电脑补位</button><button data-ai="0">只有玩家</button></div></div>
+      <div class="seg" id="lobbyAI"><button data-ai="1">电脑补位</button><button data-ai="0">只有玩家</button></div>
+      <div class="seg" id="lobbyRule"><button data-e="0">普通赛</button><button data-e="1">淘汰赛</button></div></div>
     <div class="modeDesc" id="lobbyMsg"></div>
     <div class="row"><button class="btn" id="lobbyStart">开始比赛!</button><button class="btn alt" id="lobbyLeave" style="margin-top:22px">离开房间</button></div>
   </div>
@@ -404,16 +411,26 @@ const THEMES = {
 };
 // st：[极速, 加速, 操控, 重量]，1~5
 const DRIVERS = [
-  { n:'赤焰', c:0xe53935, st:[3, 3, 3, 3], d:'全能均衡' }, { n:'翠风', c:0x2fa84f, st:[2, 5, 4, 2], d:'起步飞快' },
-  { n:'蓝波', c:0x1e7be5, st:[4, 2, 3, 4], d:'高速巡航' }, { n:'金星', c:0xf7c512, st:[5, 1, 2, 5], d:'重型猛兽' },
-  { n:'紫电', c:0x8e3ad0, st:[2, 4, 5, 2], d:'弯道之王' }, { n:'粉桃', c:0xff5fa2, st:[3, 4, 4, 1], d:'轻巧灵活' },
+  { n:'赤焰', c:0xe53935, st:[3, 3, 3, 3], d:'全能均衡', p:'blaze', sk:'🔥 燃魂', sd:'漂移、特技加速多持续 25%' },
+  { n:'翠风', c:0x2fa84f, st:[2, 5, 4, 2], d:'起步飞快', p:'gust', sk:'🍃 疾风', sd:'起步加速翻倍，尾流蓄得更快' },
+  { n:'蓝波', c:0x1e7be5, st:[4, 2, 3, 4], d:'高速巡航', p:'surge', sk:'💧 蓄能', sd:'金币上限 15 枚，被撞只掉 1 枚' },
+  { n:'金星', c:0xf7c512, st:[5, 1, 2, 5], d:'重型猛兽', p:'iron', sk:'🛡 铁甲', sd:'被击中、被冰冻的时间缩短 35%' },
+  { n:'紫电', c:0x8e3ad0, st:[2, 4, 5, 2], d:'弯道之王', p:'volt', sk:'⚡ 电光', sd:'漂移蓄力快 20%，更容易打出彩虹火花' },
+  { n:'粉桃', c:0xff5fa2, st:[3, 4, 4, 1], d:'轻巧灵活', p:'feather', sk:'🪶 轻盈', sd:'草地、沙地减速减半' },
 ];
+// 漂移蓄力档位：蓝 / 橙 / 紫 / 彩虹（第 4 档）
+const DRIFT_LV = [1.1, 2.2, 3.4, 4.8], DRIFT_BOOST = [0.7, 1.3, 1.9, 2.5];
+const driftLv = c => c > DRIFT_LV[3] ? 4 : c > DRIFT_LV[2] ? 3 : c > DRIFT_LV[1] ? 2 : c > DRIFT_LV[0] ? 1 : 0;
+const TRAILABLE = new Set(['banana', 'shell', 'redshell', 'mine']);
+const TRAIL_TYPES = ['', 'banana', 'shell', 'redshell', 'mine'];
 const STAT_NAMES = ['极速', '加速', '操控', '重量'];
 const CCS = { 50:{ max:33, ai:0.86 }, 100:{ max:40, ai:0.92 }, 150:{ max:47, ai:0.975 } };
 const CUPS = [ { id:'mushroom', name:'蘑菇杯', icon:'🍄', tracks:[0, 2, 4] }, { id:'star', name:'星光杯', icon:'⭐', tracks:[1, 3, 5] } ];
 const GP_PTS = [15, 12, 10, 8, 7, 6];
-const MODE_DESC = { online:'和朋友实时联机：创建房间后把邀请链接发给好友，最多 6 人，空位可由电脑补位', race:'和 5 位电脑车手比 3 圈', gp:'连续 3 条赛道累计积分（15 / 12 / 10 / 8 / 7 / 6），争夺金杯', tt:'独自冲刺：开局 3 个蘑菇，挑战你自己最快一次的幽灵车' };
-const ITEM_ICON = { mushroom:'🍄', mush3:'🍄', banana:'🍌', shell:'🐢', redshell:'🐢', bomb:'💣', lightning:'⚡', star:'⭐' };
+const MODE_DESC = { online:'和朋友实时联机：创建房间后把邀请链接发给好友，最多 6 人，空位可由电脑补位', race:'和 5 位电脑车手比 3 圈', gp:'连续 3 条赛道累计积分（15 / 12 / 10 / 8 / 7 / 6），争夺金杯', tt:'独自冲刺：开局 3 个蘑菇，挑战你自己最快一次的幽灵车', elim:'开跑 25 秒后，每 20 秒淘汰一次最后一名，坚持到最后的就是冠军' };
+const ELIM_FIRST = 25, ELIM_EVERY = 20;
+const isElim = () => mode === 'elim' || (mode === 'online' && !!NET.settings.elim);
+const ITEM_ICON = { mushroom:'🍄', mush3:'🍄', banana:'🍌', shell:'🐢', redshell:'🐢', bomb:'💣', lightning:'⚡', star:'⭐', shield:'🫧', mine:'❄️' };
 
 function sampleTrack(def){
   const pts = def.pts.map(p => new V3(p[0], p[1], p[2])), np = pts.length;
@@ -775,6 +792,7 @@ function sfx(freq, dur, type = 'square', vol = 0.07, slide = 0){
    ===================================================================== */
 let scene = null, envRT = null, trackIdx = +(store.get('kr-track') || 0) % TRACKS.length, driverIdx = +(store.get('kr-driver') || 0) % DRIVERS.length;
 let T, TH, S, N, SP, HW, RAMPS, EDGE, AT, hazards = [];
+let outList = []; // 淘汰赛中已出局的车（按出局先后）
 let karts = [], player = null, boxes = [], pads = [], projs = [], anims = [], lamps = [];
 let state = 'menu', raceTime = 0, cdT = 0, lastCd = 0, menuAng = 0, resultsShown = false, clock = 0;
 let sun = null, sunFar = null, farC = null, sparks, smoke, weather = null, skyGroup = null, boxMat = null;
@@ -783,7 +801,7 @@ farCam.position.set(0, -99999, 0); farCam.lookAt(0, -199999, 0);
 let mode = store.get('kr-mode') || 'race', cc = +(store.get('kr-cc') || 100), cupIdx = +(store.get('kr-cup') || 0) % CUPS.length, gp = null;
 let ghostRec = [], ghostAcc = 0, ghost = null, coins = [], coinMesh = null;
 let HT = 0; // 障碍物时间轴（比赛中与所有玩家同步）
-const NET = { on:false, ws:null, id:null, room:null, host:false, hostId:null, players:[], settings:{ track:0, cc:100, ai:true }, phase:'lobby', grid:null, sendT:0, pc:0, byNid:new Map() };
+const NET = { on:false, ws:null, id:null, room:null, host:false, hostId:null, players:[], settings:{ track:0, cc:100, ai:true, elim:false }, phase:'lobby', grid:null, sendT:0, pc:0, byNid:new Map() };
 const cDummy = new THREE.Object3D();
 if (!CCS[cc]) cc = 100;
 if (mode === 'online') mode = 'race';
@@ -1825,6 +1843,7 @@ class Kart {
   constructor(drv, num, isPlayer){
     this.drv = drv; this.name = drv.n; this.color = drv.c; this.isPlayer = isPlayer;
     const st = drv.st; this.spdM = 1 + (st[0] - 3) * 0.025; this.accM = 1 + (st[1] - 3) * 0.13; this.hdlM = 1 + (st[2] - 3) * 0.07; this.wt = st[3];
+    this.pv = drv.p; this.shieldT = 0; this.shieldM = null; this.frozen = false; this.iceM = null; this.trailing = false; this.trailM = null; this.trailType = ''; this.out = false;
     this.coins = 0; this.draft = 0; this.shrinkT = 0; this.onIce = false; this.inSand = false; this.steerS = 0; this.moveDir = 0; this.wallC = 0;
     Object.assign(this, makeKartMesh(drv, num));
     scene.add(this.g);
@@ -1893,12 +1912,12 @@ function spawnKarts(){
    输入
    ===================================================================== */
 const keys = {}; let itemQueued = false;
-const touch = { L:false, R:false, D:false, B:false, on:matchMedia('(pointer: coarse)').matches };
+const touch = { L:false, R:false, D:false, B:false, I:false, on:matchMedia('(pointer: coarse)').matches };
 addEventListener('keydown', e => {
   keys[e.code] = true;
   if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
   if (e.repeat) return;
-  if (['KeyE', 'ShiftLeft', 'ShiftRight', 'KeyX', 'KeyJ'].includes(e.code)) itemQueued = true;
+  if (['KeyE', 'ShiftLeft', 'ShiftRight'].includes(e.code)) itemQueued = true;
   if (e.code === 'KeyP' || e.code === 'Escape') togglePause();
   if (e.code === 'KeyM') { muted = !muted; flash(muted ? '🔇 静音' : '🔊 声音开', 900, true); }
 });
@@ -1971,7 +1990,8 @@ function playerInput(){
   if (touch.on && !touch.B) t = Math.max(t, 1);
   let analog = false;
   if (gyroActive() && s === 0) { s = -gyro.val; analog = true; }
-  const inp = { throttle:t, steer:s, analog, drift:!!(keys.Space || keys.KeyX || keys.KeyJ || touch.D), item:itemQueued };
+  const inp = { throttle:t, steer:s, analog, drift:!!(keys.Space || keys.KeyX || keys.KeyJ || touch.D), item:itemQueued,
+    itemHeld:!!(keys.KeyE || keys.ShiftLeft || keys.ShiftRight || touch.I) };
   itemQueued = false;
   return inp;
 }
@@ -2006,10 +2026,10 @@ function aiInput(k, dt){
    道具
    ===================================================================== */
 const ITEM_TABLE = [
-  [1, { banana:35, shell:25, redshell:8, bomb:12, mushroom:20 }],
-  [3, { banana:15, shell:20, redshell:25, bomb:15, mushroom:20, mush3:5 }],
-  [5, { shell:10, redshell:25, bomb:8, mushroom:20, mush3:20, star:12, lightning:5 }],
-  [9, { redshell:15, mushroom:10, mush3:30, star:25, lightning:20 }],
+  [1, { banana:30, shell:22, redshell:8, bomb:10, mushroom:16, mine:12, shield:10 }],
+  [3, { banana:12, shell:18, redshell:22, bomb:13, mushroom:18, mush3:5, mine:10, shield:12 }],
+  [5, { shell:10, redshell:22, bomb:8, mushroom:18, mush3:18, star:12, lightning:5, shield:10, mine:5 }],
+  [9, { redshell:15, mushroom:10, mush3:28, star:23, lightning:18, shield:8 }],
 ];
 function rollItem(rank){
   if (karts.length === 1) return 'mushroom';
@@ -2033,7 +2053,9 @@ function useItem(k){
     case 'shell': { const sp = Math.max(70, k.speed + 40); spawnProj('shell', k, new V3(k.pos.x + f.x * 3, 0, k.pos.z + f.z * 3), f.clone().multiplyScalar(sp)); if (k.isPlayer) sfx(500, 0.15, 'square', 0.06, -200); break; }
     case 'redshell': { const p = spawnProj('redshell', k, new V3(k.pos.x + f.x * 3, 0, k.pos.z + f.z * 3), f.clone().multiplyScalar(Math.max(66, k.speed + 28))); p.target = karts.find(o => o.rank === k.rank - 1 && !o.finished) || null; if (k.isPlayer) sfx(600, 0.2, 'square', 0.06, -300); break; }
     case 'bomb': { const p = spawnProj('bomb', k, new V3(k.pos.x + f.x * 2.5, 0, k.pos.z + f.z * 2.5), f.clone().multiplyScalar(k.speed + 22)); p.y = k.y + 1.5; p.vy = 11; p.fuse = 2.4; if (k.isPlayer) sfx(240, 0.2, 'triangle', 0.07, 120); break; }
-    case 'lightning': { for (const o of karts) if (o !== k && o.starT <= 0 && !o.remote) { o.shrinkT = 4.5; hitKart(o, '被闪电劈中!', 0.7); } lightningFlash(); if (NET.on) netEv({ e:'zap', o:k.nid }); break; }
+    case 'lightning': { for (const o of karts) if (o !== k) zapKart(o); lightningFlash(); if (NET.on) netEv({ e:'zap', o:k.nid }); break; }
+    case 'shield': k.shieldT = 12; if (k.isPlayer) { sfx(520, 0.25, 'sine', 0.08, 380); flash('🫧 护盾展开!', 700, true); } break;
+    case 'mine': { const p = spawnProj('mine', k, new V3(k.pos.x - f.x * 3.2, 0, k.pos.z - f.z * 3.2), new V3()); p.arm = 0.6; if (k.isPlayer) sfx(260, 0.15, 'triangle', 0.07, -80); break; }
   }
   if (NET.on && projs.length > before) {
     const p = projs[projs.length - 1]; p.pid = NET.id + '-' + (++NET.pc);
@@ -2042,7 +2064,7 @@ function useItem(k){
   k.itemCount--;
   if (k.itemCount <= 0) k.item = null;
 }
-let PG = null, PM = null;
+let PG = null, PM = null, mineLightMat = null;
 function shellGeo(col){ return mergeGeos([{ geo:new THREE.SphereGeometry(0.75, 18, 10, 0, Math.PI * 2, 0, Math.PI / 2), m:M4(0, 0.35, 0), color:col }, { geo:new THREE.CylinderGeometry(0.8, 0.8, 0.3, 18), m:M4(0, 0.3, 0), color:0xffffff },
   ...[0, 1, 2, 3, 4, 5].map(k => ({ geo:new THREE.CircleGeometry(0.22, 6), m:M4(Math.cos(k) * 0.5, 0.85, Math.sin(k) * 0.5, -Math.PI / 2 + 0.6 * Math.sin(k), 0, 0), color:0xffffff }))]); }
 function projGeos(){
@@ -2055,13 +2077,17 @@ function projGeos(){
     banana: mergeGeos([{ geo:new THREE.TorusGeometry(0.55, 0.2, 10, 16, Math.PI * 1.1), m:M4(0, 0.62, 0, 0, 0, Math.PI * 0.95), color:0xffe135 }, { geo:new THREE.SphereGeometry(0.12, 6, 6), m:M4(-0.55, 0.55, 0), color:0x5a3a10 }]),
     shell: mergeGeos([{ geo:new THREE.SphereGeometry(0.75, 18, 10, 0, Math.PI * 2, 0, Math.PI / 2), m:M4(0, 0.35, 0), color:0x1fbf3f }, { geo:new THREE.CylinderGeometry(0.8, 0.8, 0.3, 18), m:M4(0, 0.3, 0), color:0xffffff },
       ...[0, 1, 2, 3, 4, 5].map(k => ({ geo:new THREE.CircleGeometry(0.22, 6), m:M4(Math.cos(k) * 0.5, 0.85, Math.sin(k) * 0.5, -Math.PI / 2 + 0.6 * Math.sin(k), 0, 0), color:0xeaffea }))]),
+    mine: mergeGeos([{ geo:new THREE.CylinderGeometry(0.85, 0.95, 0.35, 16), m:M4(0, 0.2, 0), color:0x2a4a78 }, { geo:new THREE.SphereGeometry(0.62, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), m:M4(0, 0.36, 0), color:0x9fe4ff },
+      ...[0, 1, 2, 3, 4, 5].map(k => ({ geo:new THREE.ConeGeometry(0.14, 0.5, 6), m:M4(Math.cos(k * Math.PI / 3) * 0.78, 0.45, Math.sin(k * Math.PI / 3) * 0.78, 0, 0, 0), color:0xe8f8ff }))]),
+    mineLight: new THREE.SphereGeometry(0.16, 8, 6),
   };
   PM = vcMat({ roughness:0.3, metalness:0.1 });
   return PG;
 }
 function spawnProj(type, owner, pos, vel){
   const m = new THREE.Mesh(projGeos()[type], PM); m.castShadow = true; m.userData.sharedGeo = m.userData.sharedMat = true;
-  const p = { type, owner, pos, vel, g:m, idx:owner.idx, y:owner.y, life:{ shell:6, redshell:7 }[type] ?? 90, age:0, bounces:0, lat:0, along:0, gy:owner.gy, roadY:owner.roadY };
+  if (type === 'mine') { const l = new THREE.Mesh(PG.mineLight, mineLightMat || (mineLightMat = new THREE.MeshBasicMaterial({ color:0x6fe0ff }))); l.position.y = 1.0; l.userData.sharedGeo = l.userData.sharedMat = true; m.add(l); }
+  const p = { type, owner, pos, vel, g:m, arm:0, idx:owner.idx, y:owner.y, life:{ shell:6, redshell:7 }[type] ?? 90, age:0, bounces:0, lat:0, along:0, gy:owner.gy, roadY:owner.roadY };
   probe(p); if (p.gy <= VOID + 1) p.gy = p.roadY;
   m.position.set(pos.x, p.gy, pos.z); scene.add(m); projs.push(p);
   return p;
@@ -2070,15 +2096,31 @@ function lightningFlash(){
   const el = $('flashFx'); el.style.transition = 'none'; el.style.opacity = '0.8'; void el.offsetWidth; el.style.transition = 'opacity .7s'; el.style.opacity = '0';
   sfx(1800, 0.5, 'sawtooth', 0.06, -1700); shake(0.3);
 }
-function hitKart(k, why, dur = 1.2){
+// 护盾挡下一次攻击：返回 true 表示已被挡住
+function shieldBlock(k){
+  if (k.shieldT <= 0) return false;
+  k.shieldT = 0; k.invT = Math.max(k.invT, 0.5);
+  for (let i = 0; i < 24; i++) sparks.emit(k.pos.x, k.y + 1.2, k.pos.z, (Math.random() - .5) * 14, 2 + Math.random() * 7, (Math.random() - .5) * 14, i % 2 ? 0x8fe8ff : 0xffffff, 0.6, 0.7, 0.1, 1, 16);
+  if (k.isPlayer) { sfx(900, 0.3, 'sine', 0.08, -500); flash('护盾挡住了!', 800, true); }
+  return true;
+}
+function hitKart(k, why, dur = 1.2, freeze = false){
   if (k.remote) return false;
   if (k.starT > 0 || k.invT > 0 || k.spinT > 0) return false;
-  k.spinT = dur; k.speed *= dur < 1 ? 0.6 : 0.3; k.drifting = false; k.charge = 0; k.boostT = 0;
-  const lost = Math.min(3, k.coins); k.coins -= lost;
+  if (shieldBlock(k)) return false;
+  if (k.pv === 'iron') dur *= 0.65;
+  k.spinT = dur; k.frozen = freeze; k.speed *= freeze ? 0.15 : dur < 1 ? 0.6 : 0.3; k.drifting = false; k.charge = 0; k.boostT = 0;
+  if (k.trailing) { k.trailing = false; k.item = null; k.itemCount = 0; } // 被击中时拖在车尾的道具也掉了
+  const lost = Math.min(k.pv === 'surge' ? 1 : 3, k.coins); k.coins -= lost;
   for (let i = 0; i < lost * 2; i++) sparks.emit(k.pos.x, k.y + 1.2, k.pos.z, (Math.random() - .5) * 10, 6 + Math.random() * 5, (Math.random() - .5) * 10, 0xffd23f, 0.9, 0.8, 0.4, 1, 20);
   if (k.isPlayer) { sfx(400, 0.4, 'sawtooth', 0.08, -300); flash(why || '哎呀!', 900, true); shake(0.5); }
-  for (let i = 0; i < 18; i++) sparks.emit(k.pos.x, k.y + 1, k.pos.z, (Math.random() - .5) * 12, 4 + Math.random() * 7, (Math.random() - .5) * 12, [0xffee88, 0xffffff, 0xffb040][i % 3], 0.7, 0.6, 0.1, 1, 18);
+  for (let i = 0; i < 18; i++) sparks.emit(k.pos.x, k.y + 1, k.pos.z, (Math.random() - .5) * 12, 4 + Math.random() * 7, (Math.random() - .5) * 12, freeze ? [0xd8f6ff, 0xffffff, 0x7fd0ff][i % 3] : [0xffee88, 0xffffff, 0xffb040][i % 3], 0.7, 0.6, 0.1, 1, 18);
   return true;
+}
+function zapKart(o){
+  if (o.remote || o.starT > 0 || o.out) return;
+  if (shieldBlock(o)) return;
+  o.shrinkT = 4.5; hitKart(o, '被闪电劈中!', 0.7);
 }
 
 /* =====================================================================
@@ -2091,7 +2133,7 @@ function landKart(k){
     for (let i = 0; i < 10; i++) smoke.emit(k.pos.x + (Math.random() - .5) * 2.5, k.y + 0.2, k.pos.z + (Math.random() - .5) * 2.5, (Math.random() - .5) * 6, 1 + Math.random() * 2, (Math.random() - .5) * 6, TH.ground === 'snow' ? 0xffffff : TH.ground === 'sand' ? 0xe8c890 : 0xb8b0a8, 0.7, 1.4, 2.4, 0.5, 0, 2);
     if (k.isPlayer) { shake(clamp(k.airT * 0.4, 0.1, 0.4)); sfx(90, 0.12, 'triangle', 0.08); }
   }
-  if (k.trick) { k.boostT = Math.max(k.boostT, 1.0); if (k.isPlayer) { sfx(300, 0.35, 'sawtooth', 0.08, 500); flash('特技加速!', 700, true); } }
+  if (k.trick) { k.boostT = Math.max(k.boostT, k.pv === 'blaze' ? 1.25 : 1.0); if (k.isPlayer) { sfx(300, 0.35, 'sawtooth', 0.08, 500); flash('特技加速!', 700, true); } }
   k.trick = false; k.trickT = 0; k.launched = false;
 }
 function respawn(k){
@@ -2106,19 +2148,20 @@ function updateKart(k, inp, dt){
   if (k.boostT > 0) k.boostT -= dt;
   if (k.starT > 0) k.starT -= dt;
   if (k.shrinkT > 0) k.shrinkT -= dt;
+  if (k.shieldT > 0) k.shieldT -= dt;
   const prevIdx = k.idx;
 
-  let max = MAXS * k.spdM * (k.isPlayer ? 1 : k.skill) * (1 + k.coins * 0.008) * (k.shrinkT > 0 ? 0.72 : 1) * (k.inSand && k.starT <= 0 ? 0.55 : 1);
+  let max = MAXS * k.spdM * (k.isPlayer ? 1 : k.skill) * (1 + k.coins * 0.008) * (k.shrinkT > 0 ? 0.72 : 1) * (k.inSand && k.starT <= 0 ? (k.pv === 'feather' ? 0.78 : 0.55) : 1);
   if (!k.isPlayer && player) { const gap = (k.prog - player.prog) / N; max *= gap > 0.1 ? 0.9 : gap < -0.1 ? 1.1 : 1; }
   const offroad = k.offroad && k.starT <= 0 && !k.air;
-  if (offroad) max *= 0.5;
+  if (offroad) max *= k.pv === 'feather' ? 0.75 : 0.5;
   if (k.boostT > 0) max = Math.max(max, MAXS * 1.45);
   if (k.starT > 0) max = Math.max(max, MAXS * 1.3);
 
   let steer = 0;
   if (k.spinT > 0) {
-    k.spinT -= dt; k.speed *= Math.pow(0.3, dt); k.spinA += 14 * dt;
-    if (k.spinT <= 0) k.spinA = 0;
+    k.spinT -= dt; k.speed *= Math.pow(k.frozen ? 0.02 : 0.3, dt); if (!k.frozen) k.spinA += 14 * dt;
+    if (k.spinT <= 0) { k.spinA = 0; if (k.frozen) { k.frozen = false; for (let i = 0; i < 20; i++) sparks.emit(k.pos.x, k.y + 1, k.pos.z, (Math.random() - .5) * 10, 3 + Math.random() * 6, (Math.random() - .5) * 10, 0xd8f6ff, 0.5, 0.6, 0.1, 1, 18); } }
   } else {
     // 转向输入平滑。玩家用按键时是"渐进式"的：轻点只转一点（方便直道微调），按住约 0.2 秒打满；
     // 松手和反打都很快，漂移中也用快速响应
@@ -2154,9 +2197,11 @@ function updateKart(k, inp, dt){
     }
     if (k.drifting && (!inp.drift || k.speed < 10)) {
       k.drifting = false; if (k.isPlayer) k.steerS *= 0.5;
-      if (k.charge > 3.4) { k.boostT = 1.9; if (k.isPlayer) { sfx(200, 0.6, 'sawtooth', 0.09, 600); flash('超级漂移!', 600, true); } }
-      else if (k.charge > 2.2) { k.boostT = 1.3; if (k.isPlayer) sfx(220, 0.45, 'sawtooth', 0.08, 400); }
-      else if (k.charge > 1.1) { k.boostT = 0.7; if (k.isPlayer) sfx(220, 0.3, 'sawtooth', 0.07, 250); }
+      const lv = driftLv(k.charge), bm = k.pv === 'blaze' ? 1.25 : 1;
+      if (lv) k.boostT = Math.max(k.boostT, DRIFT_BOOST[lv - 1] * bm);
+      if (k.isPlayer && lv === 4) { sfx(180, 0.8, 'sawtooth', 0.1, 900); [784, 988, 1175].forEach((q, i) => setTimeout(() => sfx(q, 0.12, 'square', 0.05), i * 60)); flash('🌈 彩虹漂移!', 800, true); shake(0.2); }
+      else if (k.isPlayer && lv === 3) { sfx(200, 0.6, 'sawtooth', 0.09, 600); flash('超级漂移!', 600, true); }
+      else if (k.isPlayer && lv) sfx(220, lv === 2 ? 0.45 : 0.3, 'sawtooth', lv === 2 ? 0.08 : 0.07, lv === 2 ? 400 : 250);
       k.charge = 0;
     }
     // 低速更灵活、高速更稳；腾空（非小跳）时转向减弱
@@ -2165,7 +2210,7 @@ function updateKart(k, inp, dt){
       // 漂移：向内打方向切内线，向外打几乎走直线，可调范围更大
       const inward = steer * k.driftDir;
       k.heading += k.driftDir * Math.max(0.06, k.isPlayer ? 0.64 + 0.74 * inward : 0.68 + 0.58 * inward) * TURN * k.hdlM * dt * tf;
-      if (!k.air) k.charge += dt * (inward > 0.2 ? 1.25 : 0.7);
+      if (!k.air) k.charge += dt * (inward > 0.2 ? 1.25 : 0.7) * (k.pv === 'volt' ? 1.2 : 1);
     } else {
       // 玩家：按住转得更紧，松油门/刹车时车头更容易转进弯
       const tight = k.isPlayer ? (1 + 0.2 * (k.steerHold || 0)) * (inp.throttle <= 0 && k.speed > 14 ? 1.15 : 1) * lerp(1, 1.08, clamp(Math.abs(k.speed) / MAXS, 0, 1)) : 1;
@@ -2226,7 +2271,7 @@ function updateKart(k, inp, dt){
       if ((dx * f.x + dz * f.z) / d > 0.97) { behind = true; break; }
     }
     k.draft = behind ? k.draft + dt : Math.max(0, k.draft - dt * 2);
-    if (k.draft > 1.3) { k.draft = 0; k.boostT = Math.max(k.boostT, 0.9); if (k.isPlayer) { flash('尾流加速!', 600, true); sfx(300, 0.3, 'sawtooth', 0.06, 300); } }
+    if (k.draft > (k.pv === 'gust' ? 0.8 : 1.3)) { k.draft = 0; k.boostT = Math.max(k.boostT, 0.9); if (k.isPlayer) { flash('尾流加速!', 600, true); sfx(300, 0.3, 'sawtooth', 0.06, 300); } }
   } else k.draft = Math.max(0, k.draft - dt * 2);
   k.offroad = EDGE === 'grass' && Math.abs(k.lat) > s.hw + CURB;
   { const zs = S[k.idx], z = zs.zone, fl = k.lat / zs.hw; const inZ = !!z && !k.air && fl >= z.a && fl <= z.b; k.onIce = inZ && z.type === 'ice'; k.inSand = inZ && z.type === 'sand'; }
@@ -2272,7 +2317,7 @@ function updateKart(k, inp, dt){
   }
   for (const c of coins) {
     if (c.t > 0 || (k.pos.x - c.pos.x) ** 2 + (k.pos.z - c.pos.z) ** 2 > 3.4 || Math.abs(k.y + 0.8 - c.pos.y) > 2) continue;
-    c.t = 10; if (k.coins < 10) k.coins++; k.speed = Math.min(k.speed + 1.5, MAXS * 1.5);
+    c.t = 10; if (k.coins < (k.pv === 'surge' ? 15 : 10)) k.coins++; k.speed = Math.min(k.speed + 1.5, MAXS * 1.5);
     if (k.isPlayer) sfx(1320, 0.09, 'square', 0.045, 400);
     for (let i = 0; i < 6; i++) sparks.emit(c.pos.x, c.pos.y, c.pos.z, (Math.random() - .5) * 6, 3 + Math.random() * 3, (Math.random() - .5) * 6, 0xffd23f, 0.4, 0.5, 0.1, 1, 10);
   }
@@ -2282,7 +2327,14 @@ function updateKart(k, inp, dt){
     if (dx * dx + dz * dz < (h.r + 1.1) ** 2 && Math.abs(k.y + 0.9 - h.pos.y) < h.r + 1.3) h.hit(k);
   }
   if (k.rolling > 0) { k.rolling -= dt; if (k.rolling <= 0) { k.rolling = 0; k.item = k.pending; k.itemCount = k.item === 'mush3' ? 3 : 1; sfx(1200, 0.15, 'square', 0.06); } }
-  if (inp.item && k.spinT <= 0) useItem(k);
+  // 香蕉 / 龟壳 / 冰冻地雷：按住道具键拖在车尾，可挡下身后飞来的攻击；松开才放出
+  if (k.isPlayer) {
+    if (inp.item && k.spinT <= 0 && k.item && !k.rolling) { if (TRAILABLE.has(k.item) && k.itemCount === 1) k.trailing = true; else useItem(k); }
+    if (k.trailing && (!inp.itemHeld || !k.item)) { k.trailing = false; if (k.item && k.spinT <= 0) useItem(k); }
+  } else {
+    k.trailing = !!k.item && !k.rolling && TRAILABLE.has(k.item) && k.spinT <= 0;
+    if (inp.item && k.spinT <= 0) { k.trailing = false; useItem(k); }
+  }
 
   const dot = f.x * S[k.idx].tan.x + f.z * S[k.idx].tan.z;
   k.wrongT = (dot < -0.3 && k.speed > 3) ? k.wrongT + dt : 0;
@@ -2302,7 +2354,7 @@ function kartVisuals(k, steer, dt, f, offroad){
   for (const w of k.wheels) { w.w.rotation.x += k.speed * dt / 0.5; if (w.front) w.w.rotation.y = k.steerVis; }
   const rgt = new V3(-Math.cos(k.heading), 0, Math.sin(k.heading));
   if (k.drifting && k.charge > 0.25 && !k.air) {
-    const c = k.charge > 3.4 ? 0xc45cff : k.charge > 2.2 ? 0xff8c1a : k.charge > 1.1 ? 0x4fc3ff : 0xffffff;
+    const lv = driftLv(k.charge), c = lv === 4 ? new THREE.Color().setHSL((clock * 3 + Math.random() * 0.3) % 1, 1, 0.6).getHex() : [0xffffff, 0x4fc3ff, 0xff8c1a, 0xc45cff][lv];
     for (const sx of [-1, 1]) {
       const bx = k.pos.x - f.x * 1.2 + rgt.x * sx * 1.05, bz = k.pos.z - f.z * 1.2 + rgt.z * sx * 1.05;
       sparks.emit(bx, k.y + 0.25, bz, (Math.random() - .5) * 5 - f.x * 3, 2 + Math.random() * 4, (Math.random() - .5) * 5 - f.z * 3, c, 0.35, k.charge > 1.1 ? 0.55 : 0.35, 0.05, 1, 14);
@@ -2330,6 +2382,7 @@ function kartVisuals(k, steer, dt, f, offroad){
   k.g.position.set(k.pos.x, k.y, k.pos.z);
   k.g.visible = k.invT > 0 ? Math.floor(k.invT * 16) % 2 === 0 : true;
   k.g.scale.setScalar(lerp(k.g.scale.x, k.shrinkT > 0 ? 0.6 : 1, 1 - Math.pow(0.002, dt)));
+  kartExtras(k, f);
   if (k.isPlayer && k.draft > 0.25) for (let i = 0; i < 2; i++) smoke.emit(k.pos.x + (Math.random() - .5) * 5 + f.x * 5, k.y + 0.4 + Math.random() * 2.2, k.pos.z + (Math.random() - .5) * 5 + f.z * 5, -f.x * 30, 0, -f.z * 30, 0xffffff, 0.25, 0.25, 0.1, 0.55);
   const gy = k.gy > VOID + 1 ? k.gy : -1e5, h = k.y - gy;
   k.blob.visible = h < 12; k.blob.position.y = Math.max(-h, -12) + 0.08; k.blob.material.opacity = 0.32 * clamp(1 - h / 10, 0, 1);
@@ -2348,9 +2401,70 @@ function kartVisuals(k, steer, dt, f, offroad){
   }
 }
 
+// ---------- 淘汰赛 ----------
+function eliminate(k){
+  if (k.out || !karts.includes(k)) return;
+  k.out = true; k.outT = raceTime; k.speed = 0; k.trailing = false;
+  karts = karts.filter(o => o !== k); outList.push(k);
+  for (let i = 0; i < 46; i++) sparks.emit(k.pos.x, k.y + 1, k.pos.z, (Math.random() - .5) * 24, Math.random() * 16, (Math.random() - .5) * 24, [0xffe060, 0xff7a10, 0xff3a00, 0xffffff][i % 4], 0.8, 2, 0.4, 1, 10, 1.5);
+  for (let i = 0; i < 14; i++) smoke.emit(k.pos.x + (Math.random() - .5) * 3, k.y + 1 + Math.random() * 2, k.pos.z + (Math.random() - .5) * 3, (Math.random() - .5) * 5, 3 + Math.random() * 3, (Math.random() - .5) * 5, 0x55504c, 1.4, 2.6, 5, 0.7, -1, 1);
+  scene.remove(k.g); if (k.trailM) { scene.remove(k.trailM); k.trailM = null; }
+  if (k.isPlayer) {
+    state = 'done'; flash('💥 你被淘汰了!', 2000); sfx(300, 0.8, 'sawtooth', 0.09, -250); shake(0.6);
+    setTimeout(showResults, 2200);
+  } else {
+    flash(`💥 ${k.name} 被淘汰!`, 1300, true); sfx(180, 0.4, 'sawtooth', 0.07, -120);
+    if (player && Math.hypot(player.pos.x - k.pos.x, player.pos.z - k.pos.z) < 45) shake(0.3);
+  }
+  checkElimWinner();
+}
+function checkElimWinner(){
+  if (karts.length !== 1 || karts[0].finished) return;
+  const w = karts[0]; w.finished = true; w.finishTime = raceTime;
+  if (w.isPlayer) {
+    state = 'done'; flash('🏆 坚持到最后!', 2500);
+    [523, 659, 784, 1046].forEach((q, i) => setTimeout(() => sfx(q, 0.3, 'square', 0.06), i * 160));
+    setTimeout(showResults, 2600);
+  }
+}
+function elimNext(){ return ELIM_FIRST + ELIM_EVERY * outList.length; }
+function elimTick(){
+  if (karts.length <= 1) { checkElimWinner(); return; }
+  if (raceTime < elimNext()) return;
+  if (NET.on && !NET.host) return; // 联网时由房主决定淘汰谁，再广播给所有人
+  const live = updateRanks().filter(k => !k.out), last = live[live.length - 1];
+  if (NET.on) netEv({ e:'elim', nid:last.nid });
+  eliminate(last);
+}
+
+// 护盾气泡 / 冰块 / 拖在车尾的道具
+let bubbleMat = null, iceMat = null;
+function kartExtras(k, f){
+  const sh = k.shieldT > 0 && !k.out;
+  if (sh && !k.shieldM) {
+    bubbleMat = bubbleMat || new THREE.MeshPhongMaterial({ color:0x8fe8ff, emissive:0x2a8fbf, transparent:true, opacity:0.28, shininess:120, depthWrite:false, side:THREE.DoubleSide });
+    k.shieldM = new THREE.Mesh(new THREE.SphereGeometry(2.3, 24, 16), bubbleMat); k.shieldM.position.y = 1.1; k.shieldM.userData.sharedMat = true; k.g.add(k.shieldM);
+  }
+  if (k.shieldM) { k.shieldM.visible = sh && (k.shieldT > 2 || Math.floor(k.shieldT * 8) % 2 === 0); k.shieldM.scale.setScalar(1 + Math.sin(clock * 6) * 0.03); }
+  const fr = k.frozen && k.spinT > 0 && !k.out;
+  if (fr && !k.iceM) {
+    iceMat = iceMat || new THREE.MeshPhongMaterial({ color:0xc8f0ff, emissive:0x3a7fa8, transparent:true, opacity:0.55, shininess:150, depthWrite:false });
+    k.iceM = new THREE.Mesh(new THREE.BoxGeometry(3.2, 2.6, 4.2), iceMat); k.iceM.position.y = 1.2; k.iceM.rotation.y = 0.12; k.iceM.userData.sharedMat = true; k.g.add(k.iceM);
+  }
+  if (k.iceM) k.iceM.visible = fr;
+  const tt = k.trailing && k.item && !k.out ? k.item : '';
+  if (tt !== k.trailType) {
+    if (k.trailM) { scene.remove(k.trailM); k.trailM = null; }
+    k.trailType = tt;
+    if (tt) { k.trailM = new THREE.Mesh(projGeos()[tt], PM); k.trailM.castShadow = true; k.trailM.userData.sharedGeo = k.trailM.userData.sharedMat = true; scene.add(k.trailM); }
+  }
+  if (k.trailM) { k.trailM.position.set(k.pos.x - f.x * 2.7, k.y + 0.05, k.pos.z - f.z * 2.7); k.trailM.rotation.y = k.heading + (tt === 'banana' ? 0 : clock * 3); k.trailM.visible = k.g.visible; }
+}
+
 function onLap(k){
   if (k.lap >= 2) { const lt = raceTime - k.lapStart; k.bestLap = Math.min(k.bestLap, lt); k.lapTimes.push(lt); }
   k.lapStart = raceTime;
+  if (isElim()) { if (k.isPlayer && k.lap > 1) { flash(`第 ${k.lap} 圈`, 1100, true); sfx(660, 0.15); } return; }
   if (k.lap > LAPS && !k.finished) {
     k.finished = true; k.finishTime = raceTime;
     if (NET.on && !k.remote) netSend({ t:'finish', nid:k.nid, time:+k.finishTime.toFixed(3) });
@@ -2412,10 +2526,25 @@ function updateProjs(dt){
       if (p.life > 0 && (p.fuse <= 0 || near)) explode(p);
     } else p.y = p.gy > VOID + 1 ? p.gy : p.roadY;
     p.g.position.set(p.pos.x, p.y, p.pos.z);
-    if (p.type !== 'bomb' && p.life > 0) for (const k of karts) {
+    if (p.type === 'mine') {
+      p.arm -= dt; p.g.rotation.y += dt * 1.5;
+      const blink = p.arm > 0 || Math.sin(clock * 8) > 0.6; p.g.children[0].visible = blink;
+    }
+    if (p.type !== 'bomb' && p.life > 0 && !(p.type === 'mine' && p.arm > 0)) for (const k of karts) {
       if (k.remote || (shellish && k === p.owner && p.age < 0.4)) continue;
-      if ((k.pos.x - p.pos.x) ** 2 + (k.pos.z - p.pos.z) ** 2 < 3.6 && Math.abs(k.y - p.y) < 2) {
-        hitKart(k, p.type === 'banana' ? '踩到香蕉皮!' : p.type === 'redshell' ? '被红龟壳追上了!' : '被龟壳击中!'); p.life = 0; if (NET.on && p.pid) netEv({ e:'phit', pid:p.pid }); break;
+      const d2 = (k.pos.x - p.pos.x) ** 2 + (k.pos.z - p.pos.z) ** 2;
+      if (d2 < (p.type === 'mine' ? 7.5 : 3.6) && Math.abs(k.y - p.y) < 2) {
+        const f = k.fwd, behind = ((p.pos.x - k.pos.x) * f.x + (p.pos.z - k.pos.z) * f.z) < 0.4;
+        if (k.trailing && behind) {
+          // 车尾拖着的道具挡下了这一击
+          k.trailing = false; k.item = null; k.itemCount = 0;
+          for (let i = 0; i < 16; i++) sparks.emit(p.pos.x, p.y + 0.8, p.pos.z, (Math.random() - .5) * 12, 3 + Math.random() * 5, (Math.random() - .5) * 12, 0xffe080, 0.5, 0.6, 0.1, 1, 16);
+          if (k.isPlayer) { sfx(700, 0.15, 'square', 0.06, -300); flash('车尾挡住了!', 800, true); }
+        } else if (p.type === 'mine') {
+          for (let i = 0; i < 30; i++) sparks.emit(p.pos.x, p.y + 0.8, p.pos.z, (Math.random() - .5) * 16, 3 + Math.random() * 8, (Math.random() - .5) * 16, [0xd8f6ff, 0xffffff, 0x7fd0ff][i % 3], 0.6, 0.8, 0.2, 1, 14);
+          hitKart(k, '被冻住了!', 1.5, true);
+        } else hitKart(k, p.type === 'banana' ? '踩到香蕉皮!' : p.type === 'redshell' ? '被红龟壳追上了!' : '被龟壳击中!');
+        p.life = 0; if (NET.on && p.pid) netEv({ e:'phit', pid:p.pid }); break;
       }
     }
     if (p.life > 0 && shellish) for (const q of projs) if (q !== p && q.life > 0 && q.type !== 'bomb' && (q.pos.x - p.pos.x) ** 2 + (q.pos.z - p.pos.z) ** 2 < 2.5) { q.life = 0; p.life = 0; }
@@ -2447,6 +2576,7 @@ function updateRanks(){
     if (a.finished) return a.finishTime - b.finishTime;
     return b.prog - a.prog;
   });
+  if (outList.length) sorted.push(...outList.slice().reverse());
   sorted.forEach((k, i) => k.rank = i + 1);
   return sorted;
 }
@@ -2500,21 +2630,27 @@ function drawMinimap(){
 const ORD = ['', 'st', 'nd', 'rd', 'th', 'th', 'th'];
 function updateHUD(){
   const p = player;
-  setHTML('lap', `${clamp(p.lap, 1, LAPS)}<small>/${LAPS}</small>`);
+  const el = isElim();
+  setHTML('lap', el ? `${Math.max(1, p.lap)}<small> 圈</small>` : `${clamp(p.lap, 1, LAPS)}<small>/${LAPS}</small>`);
+  if (el && state !== 'countdown' && !p.out && !p.finished && karts.length > 1) {
+    const left = Math.max(0, elimNext() - raceTime), live = karts.length, danger = p.rank === live;
+    setHTML('elimBox', `${danger ? '⚠ 你是最后一名!' : '淘汰倒计时'} ${Math.ceil(left)}s<small style="display:block;font-size:12px;opacity:.8">剩余 ${live} 辆车</small>`);
+    $('elimBox').classList.remove('hidden'); $('elimBox').classList.toggle('danger', danger && left < 8);
+  } else $('elimBox').classList.add('hidden');
   setHTML('time', fmt(p.finished ? p.finishTime : raceTime));
   setHTML('laps', p.lapTimes.map((t, i) => `L${i + 1} ${fmt(t)}`).join('<br>') + (ghost ? `<br>👻 最佳 ${fmt(ghost.t)}` : ''));
   setHTML('pos', `${p.rank}<small>${ORD[p.rank]}</small>`);
   $('pos').classList.toggle('low', p.rank > 3);
   setHTML('spd', `${Math.round(Math.abs(p.speed) * 3.2)}<small>km/h</small>`);
   const ch = $('charge').firstChild, c = p.drifting ? p.charge : 0;
-  ch.style.width = Math.min(100, c / 3.4 * 100) + '%'; ch.style.background = c > 3.4 ? '#c45cff' : c > 2.2 ? '#ff8c1a' : c > 1.1 ? '#4fc3ff' : '#fff';
+  { const lv = driftLv(c); ch.style.width = Math.min(100, c / DRIFT_LV[3] * 100) + '%'; ch.style.background = lv === 4 ? `hsl(${(clock * 360) % 360},95%,62%)` : ['#fff', '#4fc3ff', '#ff8c1a', '#c45cff'][lv]; }
   setHTML('coins', `🪙 ${p.coins}`);
   const slot = $('itemSlot');
   if (p.rolling > 0) { const all = Object.values(ITEM_ICON); setHTML('itemIcon', all[Math.floor(p.rolling * 14) % all.length]); setHTML('itemCnt', ''); slot.classList.add('roll'); }
   else { slot.classList.remove('roll'); setHTML('itemIcon', p.item ? ITEM_ICON[p.item] : ''); $('itemIcon').classList.toggle('red', p.item === 'redshell'); setHTML('itemCnt', p.item && p.itemCount > 1 ? '×' + p.itemCount : ''); }
   $('wrong').classList.toggle('hidden', !(p.wrongT > 1 && state === 'race'));
   const order = updateRanks();
-  setHTML('board', order.map(k => `<div class="r${k.isPlayer ? ' me' : ''}"><b>${k.rank}</b><i style="background:${hexStr(k.color)}"></i>${esc(k.name)}${k.finished ? ' 🏁' : ''}</div>`).join(''));
+  setHTML('board', order.map(k => `<div class="r${k.isPlayer ? ' me' : ''}"><b>${k.rank}</b><i style="background:${hexStr(k.color)}"></i>${esc(k.name)}${k.out ? ' ❌' : k.finished ? (el ? ' 🏆' : ' 🏁') : ''}</div>`).join(''));
   if (touch.on && gyro.on) $('tilt').firstChild.style.transform = `translateX(${(gyroActive() ? gyro.val : 0) * 78}px)`;
   drawMinimap();
 }
@@ -2568,10 +2704,17 @@ function showResults(){
   $('results').classList.remove('hidden');
   if (mode === 'online') {
     $('resTitle').textContent = player.rank === 1 ? '🏆 冠军!' : player.rank <= 3 ? '登上领奖台!' : '完赛!';
-    $('resSub').textContent = `联网对战 · ${T.name} · ${cc}cc · 用时 ${fmt(player.finishTime)}`;
+    $('resSub').textContent = isElim() ? `联网淘汰赛 · ${T.name} · ${cc}cc · 第 ${player.rank} 名 · 坚持了 ${fmt(player.out ? player.outT : player.finishTime)}` : `联网对战 · ${T.name} · ${cc}cc · 用时 ${fmt(player.finishTime)}`;
     renderResults();
     setButtons(NET.host ? [['返回房间', () => netSend({ t:'back' })], ['离开房间', netLeave, 'alt']] : [['离开房间', netLeave, 'alt']]);
     if (!NET.host) $('resSub').textContent += ' · 等待房主返回房间…';
+    return;
+  }
+  if (mode === 'elim') {
+    $('resTitle').textContent = player.rank === 1 ? '🏆 最后的幸存者!' : player.rank <= 3 ? '坚持到了前三!' : '被淘汰了';
+    $('resSub').textContent = `淘汰赛 · ${T.name} · ${cc}cc · 第 ${player.rank} 名 · 坚持了 ${fmt(player.out ? player.outT : player.finishTime)}`;
+    renderResults();
+    setButtons([['再来一局', startRace], ['下一条赛道', nextTrack, 'alt'], ['返回菜单', toMenu, 'alt']]);
     return;
   }
   if (mode === 'tt') {
@@ -2598,7 +2741,7 @@ function showResults(){
 }
 function renderResults(){
   const sorted = updateRanks();
-  $('resTable').innerHTML = sorted.map(k => `<tr class="${k.isPlayer ? 'me' : ''}"><td>${k.rank}</td><td>${dotName(k.drv, k.isPlayer, k.name)}</td><td>${k.finished ? fmt(k.finishTime) : '行驶中…'}</td></tr>`).join('');
+  $('resTable').innerHTML = sorted.map(k => `<tr class="${k.isPlayer ? 'me' : ''}"><td>${k.rank}</td><td>${dotName(k.drv, k.isPlayer, k.name)}</td><td>${k.out ? '💥 ' + fmt(k.outT) + ' 出局' : isElim() ? (k.finished ? '🏆 胜出' : '比赛中…') : k.finished ? fmt(k.finishTime) : '行驶中…'}</td></tr>`).join('');
 }
 function gpFinal(){
   const cup = CUPS[gp.cup];
@@ -3458,9 +3601,10 @@ function netEvent(e){
     const p = projs[projs.length - 1]; p.pid = e.pid; if (e.tg) p.target = kartByNid(e.tg);
     if (e.type === 'bomb') { p.y = e.y; p.vy = e.vy; p.fuse = e.fuse; }
   } else if (e.e === 'phit') { const p = projs.find(q => q.pid === e.pid); if (p) p.life = 0; }
-  else if (e.e === 'zap') { for (const o of karts) if (o.nid !== e.o && !o.remote && o.starT <= 0) { o.shrinkT = 4.5; hitKart(o, '被闪电劈中!', 0.7); } lightningFlash(); }
+  else if (e.e === 'zap') { for (const o of karts) if (o.nid !== e.o) zapKart(o); lightningFlash(); }
+  else if (e.e === 'elim') { const k = kartByNid(e.nid); if (k) eliminate(k); }
 }
-const kFlags = k => (k.drifting ? 1 : 0) | (k.driftDir > 0 ? 2 : 0) | (k.boostT > 0 ? 4 : 0) | (k.starT > 0 ? 8 : 0) | (k.spinT > 0 ? 16 : 0) | (k.shrinkT > 0 ? 32 : 0) | (k.air ? 64 : 0) | ((k.charge > 3.4 ? 3 : k.charge > 2.2 ? 2 : k.charge > 1.1 ? 1 : 0) << 8);
+const kFlags = k => (k.drifting ? 1 : 0) | (k.driftDir > 0 ? 2 : 0) | (k.boostT > 0 ? 4 : 0) | (k.starT > 0 ? 8 : 0) | (k.spinT > 0 ? 16 : 0) | (k.shrinkT > 0 ? 32 : 0) | (k.air ? 64 : 0) | (k.shieldT > 0 ? 128 : 0) | (driftLv(k.charge) << 8) | (k.frozen && k.spinT > 0 ? 2048 : 0) | ((k.trailing && k.item ? Math.max(0, TRAIL_TYPES.indexOf(k.item)) : 0) << 12);
 function netSnapshot(){
   const list = karts.filter(k => !k.remote && k.nid).map(k => [k.nid, +k.pos.x.toFixed(2), +k.y.toFixed(2), +k.pos.z.toFixed(2), +k.heading.toFixed(3), +k.speed.toFixed(1), k.lap, +k.prog.toFixed(1), kFlags(k), k.coins]);
   if (list.length) netSend({ t:'s', k:list });
@@ -3475,7 +3619,8 @@ function remoteUpdate(k, dt){
   k.pos.set(lerp(a.x, b.x, t), 0, lerp(a.z, b.z, t)); k.y = lerp(a.y, b.y, t); k.heading = a.h + wrapA(b.h - a.h) * t; k.speed = b.sp;
   const fl = b.fl;
   k.drifting = !!(fl & 1); k.driftDir = fl & 2 ? 1 : -1; k.boostT = fl & 4 ? 0.2 : 0; k.starT = fl & 8 ? 0.2 : 0; k.shrinkT = fl & 32 ? 0.2 : 0; k.air = !!(fl & 64);
-  k.charge = [0, 1.2, 2.3, 3.5][(fl >> 8) & 3]; if (fl & 16) k.spinA += 14 * dt; else k.spinA = 0;
+  k.charge = [0, 1.2, 2.3, 3.5, 4.9][(fl >> 8) & 7]; k.frozen = !!(fl & 2048); k.spinT = fl & 16 ? 0.2 : 0; if ((fl & 16) && !k.frozen) k.spinA += 14 * dt; else k.spinA = 0;
+  k.shieldT = fl & 128 ? 0.5 : 0; { const tt = TRAIL_TYPES[(fl >> 12) & 7] || ''; k.trailing = !!tt; if (tt) k.item = tt; else if (k.remote) k.item = null; }
   k.lap = b.lap; k.prog = b.prog; k.coins = b.coins;
   probe(k);
   for (const bx of boxes) if (bx.t <= 0 && (k.pos.x - bx.pos.x) ** 2 + (k.pos.z - bx.pos.z) ** 2 < 5.8) { bx.t = 3; bx.m.visible = false; }
@@ -3498,6 +3643,7 @@ function renderLobby(){
   [...$('lobbyTracks').children].forEach((b, i) => { b.classList.toggle('on', NET.settings.track === i); b.disabled = !NET.host; });
   [...$('lobbyCC').children].forEach(b => { b.classList.toggle('on', +b.dataset.cc === NET.settings.cc); b.disabled = !NET.host; });
   [...$('lobbyAI').children].forEach(b => { b.classList.toggle('on', (b.dataset.ai === '1') === NET.settings.ai); b.disabled = !NET.host; });
+  [...$('lobbyRule').children].forEach(b => { b.classList.toggle('on', (b.dataset.e === '1') === !!NET.settings.elim); b.disabled = !NET.host; });
   $('hostHint').textContent = NET.host ? '（你是房主，可以修改）' : '（由房主选择）';
   $('lobbyStart').classList.toggle('hidden', !NET.host);
   $('lobbyMsg').textContent = NET.phase === 'racing' ? '比赛进行中…' : NET.host ? (ps.length < 2 ? '把邀请链接发给朋友，或直接开始和电脑比赛' : `已有 ${ps.length} 名玩家，准备好就开始吧`) : '等待房主开始比赛…';
@@ -3515,11 +3661,12 @@ function initOnlineUI(){
     if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, () => prompt('复制这个链接发给朋友：', url)); else prompt('复制这个链接发给朋友：', url);
   };
   const ld = $('lobbyDrivers');
-  DRIVERS.forEach((d, i) => { const el = document.createElement('div'); el.className = 'drv'; el.innerHTML = `<i style="background:${hexStr(d.c)}"></i>${d.n}<small>${d.d}</small>`; el.onclick = () => { driverIdx = i; store.set('kr-driver', i); netSend({ t:'driver', driver:i }); }; ld.appendChild(el); });
+  DRIVERS.forEach((d, i) => { const el = document.createElement('div'); el.className = 'drv'; el.innerHTML = `<i style="background:${hexStr(d.c)}"></i>${d.n}<small>${d.sk}</small>`; el.title = d.sd; el.onclick = () => { driverIdx = i; store.set('kr-driver', i); netSend({ t:'driver', driver:i }); }; ld.appendChild(el); });
   const lt = $('lobbyTracks');
   TRACKS.forEach((t, i) => { const b = document.createElement('button'); b.textContent = t.name; b.onclick = () => netSend({ t:'settings', settings:{ track:i } }); lt.appendChild(b); });
   [...$('lobbyCC').children].forEach(b => b.onclick = () => netSend({ t:'settings', settings:{ cc:+b.dataset.cc } }));
   [...$('lobbyAI').children].forEach(b => b.onclick = () => netSend({ t:'settings', settings:{ ai:b.dataset.ai === '1' } }));
+  [...$('lobbyRule').children].forEach(b => b.onclick = () => netSend({ t:'settings', settings:{ elim:b.dataset.e === '1' } }));
   // 通过邀请链接进入
   const room = new URLSearchParams(location.search).get('room');
   if (room) { mode = 'online'; applyMode(); $('codeInput').value = room.toUpperCase(); if (!$('nameInput').value) $('nameInput').value = myName(); netJoin(room); }
@@ -3537,6 +3684,7 @@ function startRace(){
   else gp = null;
   withLoading(() => {
     buildWorld(trackIdx);
+    outList = [];
     spawnKarts();
     ghostRec = []; ghostAcc = 0;
     if (mode === 'tt') { for (const b of boxes) scene.remove(b.m); boxes = []; player.item = 'mush3'; player.itemCount = 3; setupGhost(); }
@@ -3551,7 +3699,8 @@ function startRace(){
     $('itemHint').textContent = touch.on ? '' : 'E / Shift 使用道具';
     $('lights').classList.remove('hidden'); [...$('lights').children].forEach(l => l.className = '');
     $('sub').textContent = mode === 'online' ? `联网对战 · ${T.name} · ${cc}cc · ${karts.filter(k => !k.nid.startsWith('ai')).length} 名玩家` : mode === 'gp' ? `${CUPS[gp.cup].icon} ${CUPS[gp.cup].name} 第 ${gp.race + 1}/3 场 · ${T.name} · ${cc}cc`
-      : mode === 'tt' ? `计时赛 · ${T.name} · ${cc}cc${ghost ? ' · 👻 ' + fmt(ghost.t) : ''}` : `${T.name} · ${LAPS} 圈 · ${cc}cc`;
+      : mode === 'tt' ? `计时赛 · ${T.name} · ${cc}cc${ghost ? ' · 👻 ' + fmt(ghost.t) : ''}` : mode === 'elim' ? `淘汰赛 · ${T.name} · ${cc}cc · 每 ${ELIM_EVERY} 秒淘汰最后一名` : `${T.name} · ${LAPS} 圈 · ${cc}cc`;
+    if (mode === 'online' && isElim()) $('sub').textContent += ' · 淘汰赛';
     $('sub').style.opacity = 1;
     const f = player.fwd;
     camera.position.set(player.pos.x + f.x * 30 + 25, player.y + 18, player.pos.z + f.z * 30);
@@ -3609,7 +3758,7 @@ function applyMode(){
   $('trackCards').classList.toggle('hidden', mode === 'gp' || mode === 'online'); $('cupCards').classList.toggle('hidden', mode !== 'gp');
   $('onlinePanel').classList.toggle('hidden', mode !== 'online'); $('startBtn').classList.toggle('hidden', mode === 'online'); $('trackLabel').classList.toggle('hidden', mode === 'online');
   $('trackLabel').textContent = mode === 'gp' ? '选择奖杯' : '选择赛道';
-  $('startBtn').textContent = { race:'开始比赛!', gp:'开始大奖赛!', tt:'开始计时!', online:'' }[mode];
+  $('startBtn').textContent = { race:'开始比赛!', gp:'开始大奖赛!', tt:'开始计时!', elim:'开始淘汰赛!', online:'' }[mode];
   refreshCards();
 }
 function buildMenu(){
@@ -3635,7 +3784,7 @@ function buildMenu(){
   const dv = $('drivers');
   DRIVERS.forEach((d, i) => {
     const el = document.createElement('div'); el.className = 'drv' + (i === driverIdx ? ' sel' : '');
-    el.innerHTML = `<i style="background:${hexStr(d.c)}"></i>${d.n}<small>${d.d}</small><div class="bars">${d.st.map((v, k) => `${STAT_NAMES[k]}<span><i style="width:${v * 20}%"></i></span>`).join('')}</div>`;
+    el.innerHTML = `<i style="background:${hexStr(d.c)}"></i>${d.n}<small>${d.d}</small><div class="bars">${d.st.map((v, k) => `${STAT_NAMES[k]}<span><i style="width:${v * 20}%"></i></span>`).join('')}</div><div class="skill" title="${d.sd}">${d.sk}<small>${d.sd}</small></div>`;
     el.onclick = () => { driverIdx = i; store.set('kr-driver', i); [...dv.children].forEach((e2, k) => e2.classList.toggle('sel', k === i)); };
     dv.appendChild(el);
   });
@@ -3731,7 +3880,7 @@ function step(dt){
       if (cdT <= 1.2) {
         state = 'race'; flash('GO!', 900); sfx(880, 0.5, 'square', 0.08); [...$('lights').children].forEach(l => l.className = 'g');
         setTimeout(() => { $('lights').classList.add('hidden'); $('sub').style.opacity = 0; }, 900);
-        if (keys.KeyW || keys.ArrowUp || touch.on) { player.boostT = 0.8; sfx(250, 0.3, 'sawtooth', 0.07, 300); }
+        if (keys.KeyW || keys.ArrowUp || touch.on) { player.boostT = player.pv === 'gust' ? 1.6 : 0.8; sfx(250, 0.3, 'sawtooth', 0.07, 300); }
       }
       for (const k of karts) { probe(k); k.prog = k.lap * N + k.idx; kartVisuals(k, 0, dt, k.fwd, false); if (k.isPlayer && (keys.KeyW || keys.ArrowUp) && Math.random() < 0.4) smoke.emit(k.pos.x - k.fwd.x * 2.2, k.y + 1.05, k.pos.z - k.fwd.z * 2.2, 0, 1.5, 0, 0x888890, 0.8, 0.5, 1.4, 0.4); }
     } else {
@@ -3739,14 +3888,15 @@ function step(dt){
       for (const k of karts) { if (k.remote) remoteUpdate(k, dt); else updateKart(k, (!k.isPlayer || k.finished) ? aiInput(k, dt) : playerInput(), dt); }
       collideKarts();
       updateProjs(dt);
-      if (resultsShown && (mode === 'race' || mode === 'online')) renderResults();
+      if (isElim()) elimTick();
+      if (resultsShown && (mode === 'race' || mode === 'online' || mode === 'elim')) renderResults();
     }
     updateGhost(dt);
     sparks.update(dt); smoke.update(dt);
     if (weather) weather.update(dt, clock, camera.position);
   }
 
-  const p = player, rear = keys.KeyC;
+  const p = player.out && karts.length ? karts.reduce((a, b) => (b.prog > a.prog ? b : a)) : player, rear = keys.KeyC; // 出局后镜头跟随领跑者
   { const tgtH = p.remote || p.spinT > 0 ? p.heading : p.heading - wrapA(p.heading - p.moveDir) * 0.55; camH += wrapA(tgtH - camH) * (1 - Math.pow(state === 'countdown' ? 0.2 : 0.004, dt)); }
   const cf = new V3(Math.sin(camH), 0, Math.cos(camH)).multiplyScalar(rear ? -1 : 1);
   const baseY = Math.max(p.y, p.roadY - 2);
